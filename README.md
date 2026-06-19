@@ -67,9 +67,9 @@ At startup the gateway sorts all routes by `path_prefix` length, **longest first
 
 ```mermaid
 flowchart TD
-    A[Incoming request\nGET /oauth/token] --> B{Try route 1\n/oauth/token ?}
-    B -- match --> C[Route: auth-server\nhttp://auth-server:8080]
-    B -- no match --> D{Try route 2\n/oauth ?}
+    A[Incoming request<br/>GET /oauth/token] --> B{Try route 1<br/>/oauth/token ?}
+    B -- match --> C[Route: auth-server<br/>http://auth-server:8080]
+    B -- no match --> D{Try route 2<br/>/oauth ?}
     D -- match --> C
     D -- no match --> E{Try route N...}
     E -- no match --> F[404 No route matched]
@@ -132,32 +132,32 @@ Every inbound request passes through two stacked chains. The outer chain applies
 flowchart TB
     subgraph outer["Outer chain — all requests"]
         direction TB
-        CMP[CompressionMiddleware\noptional]
-        REC[RecoveryMiddleware\npanic → 500]
-        OTL[OTel tracing\noptional]
-        TRC[TraceIDMiddleware\ninjects X-Trace-ID]
-        RID[RequestIDMiddleware\ninjects X-Request-ID]
-        LOG[LoggingMiddleware\nstructured JSON]
+        CMP[CompressionMiddleware<br/>optional]
+        REC[RecoveryMiddleware<br/>panic → 500]
+        OTL[OTel tracing<br/>optional]
+        TRC[TraceIDMiddleware<br/>injects X-Trace-ID]
+        RID[RequestIDMiddleware<br/>injects X-Request-ID]
+        LOG[LoggingMiddleware<br/>structured JSON]
         CRS[CORSMiddleware]
         MUX[ServeMux]
     end
 
     subgraph system["System routes"]
         direction LR
-        H[/health]
-        RD[/ready]
-        SW[/swagger/]
-        MT[/metrics]
+        H["/health"]
+        RD["/ready"]
+        SW["/swagger/"]
+        MT["/metrics"]
     end
 
     subgraph proxy["Proxy catch-all — forwarded requests only"]
         direction TB
-        JWT[JWTMiddleware\noptional]
-        IPF[IPFilterMiddleware\noptional]
-        CON[ConcurrencyMiddleware\noptional]
-        RL[RateLimitMiddleware\noptional]
-        CAC[CacheMiddleware\noptional]
-        PRX[Proxy handler\nresolve + forward]
+        JWT[JWTMiddleware<br/>optional]
+        IPF[IPFilterMiddleware<br/>optional]
+        CON[ConcurrencyMiddleware<br/>optional]
+        RL[RateLimitMiddleware<br/>optional]
+        CAC[CacheMiddleware<br/>optional]
+        PRX[Proxy handler<br/>resolve + forward]
     end
 
     CMP --> REC --> OTL --> TRC --> RID --> LOG --> CRS --> MUX
@@ -180,10 +180,10 @@ Between the `Proxy` handler and the actual upstream `http.Client`, there is a se
 
 ```mermaid
 flowchart LR
-    P[Proxy handler] --> CB[CircuitBreaker\noptional]
-    CB --> RT[Retry\noptional]
-    RT --> LB[URL picker\nround-robin or weighted]
-    LB --> TX[proxy.Transport\nhttputil.ReverseProxy]
+    P[Proxy handler] --> CB[CircuitBreaker<br/>optional]
+    CB --> RT[Retry<br/>optional]
+    RT --> LB[URL picker<br/>round-robin or weighted]
+    LB --> TX[proxy.Transport<br/>httputil.ReverseProxy]
     TX --> U[Upstream service]
 ```
 
@@ -372,11 +372,11 @@ circuit_breaker:
 ```mermaid
 stateDiagram-v2
     [*] --> Closed
-    Closed --> Open : failure_ratio exceeded\nwithin interval_secs
+    Closed --> Open : failure_ratio exceeded<br/>within interval_secs
     Open --> HalfOpen : timeout_secs elapsed
     HalfOpen --> Closed : max_requests succeed
     HalfOpen --> Open : any request fails
-    Open --> Open : requests rejected immediately\n(503 Service Unavailable)
+    Open --> Open : requests rejected immediately<br/>(503 Service Unavailable)
 ```
 
 ### Caching
