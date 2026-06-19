@@ -29,7 +29,7 @@ type CacheTTLKey struct{}
 
 // CacheTTLHolder is a mutable TTL hint injected into the request context by
 // CacheMiddleware. proxy.Transport populates the TTL field after resolving the
-// route so that CacheMiddleware can honour per-route TTL overrides without a
+// route so that CacheMiddleware can honor per-route TTL overrides without a
 // direct dependency between inbound and outbound adapter packages.
 //
 // The zero-value TTL means the holder was not populated; CacheMiddleware falls

@@ -14,8 +14,13 @@ import (
 
 var testKey = []byte("test-signing-key-that-is-at-least-32-chars!!")
 
-func signHS256(t *testing.T, subject, scope string, roles []string, ttl time.Duration) string {
+// signHS256 mints a test HS256 access token. The subject is fixed to "alice"
+// because every test in this file exercises subject-agnostic verification
+// behavior (signature, scope, expiry); tests that need a different subject
+// should construct claims inline rather than parameterize this helper.
+func signHS256(t *testing.T, scope string, roles []string, ttl time.Duration) string {
 	t.Helper()
+	const subject = "alice"
 	now := time.Now()
 	claims := jwtutil.NewClaims(jwtutil.ClaimsConfig{
 		Issuer:    "test",
@@ -36,7 +41,7 @@ func signHS256(t *testing.T, subject, scope string, roles []string, ttl time.Dur
 
 func TestHS256_ValidToken_ReturnsClaims(t *testing.T) {
 	v := hs256.NewVerifier(testKey)
-	raw := signHS256(t, "alice", "read", []string{"admin"}, time.Minute)
+	raw := signHS256(t, "read", []string{"admin"}, time.Minute)
 
 	claims, err := v.Verify(raw)
 
@@ -55,7 +60,7 @@ func TestHS256_ValidToken_ReturnsClaims(t *testing.T) {
 }
 
 func TestHS256_WrongKey_ReturnsTokenInvalid(t *testing.T) {
-	raw := signHS256(t, "alice", "read", nil, time.Minute)
+	raw := signHS256(t, "read", nil, time.Minute)
 	v := hs256.NewVerifier([]byte("wrong-key-that-is-also-at-least-32-chars!!"))
 
 	_, err := v.Verify(raw)
@@ -66,7 +71,7 @@ func TestHS256_WrongKey_ReturnsTokenInvalid(t *testing.T) {
 }
 
 func TestHS256_ExpiredToken_ReturnsTokenExpired(t *testing.T) {
-	raw := signHS256(t, "alice", "read", nil, -time.Second) // already expired
+	raw := signHS256(t, "read", nil, -time.Second) // already expired
 	v := hs256.NewVerifier(testKey)
 
 	_, err := v.Verify(raw)
@@ -88,7 +93,7 @@ func TestHS256_MalformedToken_ReturnsTokenMalformed(t *testing.T) {
 
 func TestHS256_EmptyKey_ReturnsTokenInvalid(t *testing.T) {
 	v := hs256.NewVerifier(nil)
-	raw := signHS256(t, "alice", "", nil, time.Minute)
+	raw := signHS256(t, "", nil, time.Minute)
 
 	_, err := v.Verify(raw)
 

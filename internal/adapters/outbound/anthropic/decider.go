@@ -116,7 +116,7 @@ func (d *MCPDecider) Decide(ctx context.Context, user domain.MCPUser, tool domai
 	}
 
 	msg, err := d.client.Messages.New(ctx, anthropic.MessageNewParams{
-		Model:     anthropic.Model(d.model),
+		Model:     d.model,
 		MaxTokens: 512,
 		System: []anthropic.TextBlockParam{
 			{Text: systemPrompt},

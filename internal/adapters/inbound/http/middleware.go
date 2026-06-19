@@ -551,7 +551,10 @@ func (g *gzipResponseWriter) armGzip() {
 	g.ResponseWriter.Header().Set("Content-Encoding", "gzip")
 	g.ResponseWriter.Header().Del("Content-Length") // length changes after compression
 	addVaryToken(g.ResponseWriter.Header(), "Accept-Encoding")
-	g.ResponseWriter.WriteHeader(g.status)
+	// gzipResponseWriter overrides WriteHeader (it buffers the status); calling
+	// the embedded ResponseWriter.WriteHeader directly is required to actually
+	// commit the header on the wire. Do NOT replace with g.WriteHeader.
+	g.ResponseWriter.WriteHeader(g.status) //nolint:staticcheck // QF1008 false positive: must bypass our own override
 	// NewWriterLevel only errors on out-of-range level; level is clamped in newGzipResponseWriter.
 	gz, _ := gzip.NewWriterLevel(g.ResponseWriter, g.level)
 	g.gz = gz
