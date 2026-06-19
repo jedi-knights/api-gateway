@@ -139,7 +139,7 @@ func makeRetryableSet(statuses []int) map[int]bool {
 // newExponentialBackoff builds a configured ExponentialBackOff.
 // In backoff v5, ExponentialBackOff has no MaxElapsedTime; the attempt-count
 // loop in retryForward is the sole termination mechanism.
-// Reset() must be called before first use to initialise currentInterval.
+// Reset() must be called before first use to initialize currentInterval.
 func newExponentialBackoff(cfg domain.RetryConfig) *backoff.ExponentialBackOff {
 	bo := backoff.NewExponentialBackOff()
 	if cfg.InitialBackoffMs > 0 {

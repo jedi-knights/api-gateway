@@ -480,7 +480,7 @@ func setDefaults(v *viper.Viper) {
 	// key_source defaults to "ip"; production deployments behind an LB should use
 	// "x-forwarded-for" or "x-real-ip" so each end-user gets their own bucket.
 	v.SetDefault("rate_limit.enabled", false)
-	v.SetDefault("rate_limit.strategy", "token_bucket")
+	v.SetDefault("rate_limit.strategy", rateLimitStrategyTokenBucket)
 	v.SetDefault("rate_limit.key_source", "ip")
 	// Token bucket defaults
 	v.SetDefault("rate_limit.requests_per_second", 100.0)
@@ -581,11 +581,25 @@ func validateRoutes(routes []RouteConfig) error {
 	return nil
 }
 
+// Rate limiting strategy names — single source of truth for the string
+// values accepted by rate_limit.strategy in gateway.yaml.
+const (
+	rateLimitStrategyTokenBucket          = "token_bucket"
+	rateLimitStrategyFixedWindow          = "fixed_window"
+	rateLimitStrategySlidingWindowLog     = "sliding_window_log"
+	rateLimitStrategySlidingWindowCounter = "sliding_window_counter"
+	rateLimitStrategyLeakyBucket          = "leaky_bucket"
+	rateLimitStrategyConcurrency          = "concurrency"
+)
+
 // validRateLimitStrategies is the set of recognized rate_limit.strategy values.
 var validRateLimitStrategies = map[string]bool{
-	"token_bucket": true, "fixed_window": true,
-	"sliding_window_log": true, "sliding_window_counter": true,
-	"leaky_bucket": true, "concurrency": true,
+	rateLimitStrategyTokenBucket:          true,
+	rateLimitStrategyFixedWindow:          true,
+	rateLimitStrategySlidingWindowLog:     true,
+	rateLimitStrategySlidingWindowCounter: true,
+	rateLimitStrategyLeakyBucket:          true,
+	rateLimitStrategyConcurrency:          true,
 }
 
 // validateRateLimit checks that, when rate limiting is enabled, the strategy
@@ -605,13 +619,13 @@ func validateRateLimit(rl RateLimitConfig) error {
 // Extracted from validateRateLimit to keep its cyclomatic complexity within limit.
 func validateRateLimitParams(rl RateLimitConfig) error {
 	switch rl.Strategy {
-	case "token_bucket":
+	case rateLimitStrategyTokenBucket:
 		return validateTokenBucketParams(rl)
-	case "fixed_window", "sliding_window_log", "sliding_window_counter":
+	case rateLimitStrategyFixedWindow, rateLimitStrategySlidingWindowLog, rateLimitStrategySlidingWindowCounter:
 		return validateWindowParams(rl)
-	case "leaky_bucket":
+	case rateLimitStrategyLeakyBucket:
 		return validateLeakyBucketParams(rl)
-	case "concurrency":
+	case rateLimitStrategyConcurrency:
 		return validateConcurrencyParams(rl)
 	}
 	// Unreachable: validateRateLimit already checked validRateLimitStrategies before

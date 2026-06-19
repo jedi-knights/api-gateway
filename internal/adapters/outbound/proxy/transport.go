@@ -75,7 +75,7 @@ func NewTransport(client *http.Client) *Transport {
 //
 // Per-route cache TTL: if CacheMiddleware is active it injects a *ports.CacheTTLHolder
 // into the request context. When this route has a CacheTTL > 0, Transport writes the
-// route-level TTL back to the holder before forwarding, so CacheMiddleware honours
+// route-level TTL back to the holder before forwarding, so CacheMiddleware honors
 // per-route overrides without any direct dependency between the inbound and outbound
 // adapter packages.
 func (t *Transport) Forward(w http.ResponseWriter, r *http.Request, route *domain.Route) error {
@@ -157,7 +157,9 @@ func (t *Transport) proxyFor(route *domain.Route) (*httputil.ReverseProxy, error
 	}
 
 	if hasHeaderRules(route.Upstream.HeaderTransform.Response) {
-		rp.ModifyResponse = makeModifyResponse(route.Upstream.HeaderTransform.Response)
+		// ModifyResponse hook mutates response headers; the body is forwarded by
+		// httputil.ReverseProxy and must not be closed here.
+		rp.ModifyResponse = makeModifyResponse(route.Upstream.HeaderTransform.Response) //nolint:bodyclose // ReverseProxy owns the body lifecycle
 	}
 
 	// LoadOrStore handles the race between two concurrent cache misses for the
@@ -227,7 +229,9 @@ func buildTLSConfig(cfg domain.TLSConfig) (*tls.Config, error) {
 }
 
 func loadCA(tlsCfg *tls.Config, caFile string) error {
-	pem, err := os.ReadFile(caFile)
+	// caFile is operator-provided via gateway.yaml — not user-controlled at
+	// runtime. Trusting the operator with file paths is by design.
+	pem, err := os.ReadFile(caFile) //nolint:gosec // operator-supplied path from config
 	if err != nil {
 		return fmt.Errorf("proxy: read CA file %q: %w", caFile, err)
 	}

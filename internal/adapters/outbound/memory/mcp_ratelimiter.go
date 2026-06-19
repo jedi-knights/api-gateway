@@ -64,7 +64,7 @@ func NewMCPRateLimiter(ctx context.Context, cfg config.MCPConfig) *MCPRateLimite
 }
 
 // State returns a read-only snapshot of the user's current rate-limit counters.
-// It initialises the entry if this is the user's first request in the window.
+// It initializes the entry if this is the user's first request in the window.
 // State never mutates consumed counters.
 func (rl *MCPRateLimiter) State(_ context.Context, userID string, tier domain.UserTier) (domain.MCPRateLimitState, error) {
 	spec := rl.specFor(tier)

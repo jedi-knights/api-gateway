@@ -124,7 +124,7 @@ func (rl *RateLimiter) evictShard(i int, cutoff time.Time) {
 // Uses binary search so the scan is O(log N). When stale entries are found,
 // the result is compacted into a new slice so the old backing array is eligible
 // for garbage collection — preventing unbounded memory retention after a burst.
-// Allow appends in monotonically increasing time order (serialised by mu), so
+// Allow appends in monotonically increasing time order (serialized by mu), so
 // the sort invariant required by sort.Search is always satisfied.
 func evict(log []time.Time, cutoff time.Time) []time.Time {
 	idx := sort.Search(len(log), func(i int) bool {

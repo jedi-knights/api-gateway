@@ -17,7 +17,7 @@ import (
 	"github.com/jedi-knights/api-gateway/internal/config"
 )
 
-// SetupTracing initialises the OpenTelemetry trace provider from cfg.
+// SetupTracing initializes the OpenTelemetry trace provider from cfg.
 //
 // When cfg.Enabled is false a no-op provider is returned; no spans are created
 // or exported and the function succeeds without allocating SDK resources.

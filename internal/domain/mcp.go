@@ -64,7 +64,7 @@ type MCPRateLimitState struct {
 	Used          int
 	Remaining     int
 	ResetAt       time.Time
-	RateGroups    map[string]MCPGroupState // keyed by rate group name; always initialised
+	RateGroups    map[string]MCPGroupState // keyed by rate group name; always initialized
 }
 
 // MCPToolRequest is the inbound MCP tool call.

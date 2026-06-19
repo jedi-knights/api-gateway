@@ -52,7 +52,7 @@ func (p *Picker) Pick(routeName string, urls []string, weights []int) string {
 		return urls[0]
 	}
 	if len(weights) == 0 || allEqual(weights) {
-		return urls[rand.Intn(len(urls))]
+		return urls[rand.Intn(len(urls))] //nolint:gosec // load-balancer distribution; crypto-rand not required
 	}
 	return p.weightedPick(routeName, urls, weights)
 }
@@ -61,9 +61,9 @@ func (p *Picker) Pick(routeName string, urls []string, weights []int) string {
 func (p *Picker) weightedPick(routeName string, urls []string, weights []int) string {
 	entry := p.getCDF(routeName, urls, weights)
 	if entry.total <= 0 {
-		return urls[rand.Intn(len(urls))]
+		return urls[rand.Intn(len(urls))] //nolint:gosec // load-balancer distribution; crypto-rand not required
 	}
-	n := rand.Intn(entry.total)
+	n := rand.Intn(entry.total) //nolint:gosec // load-balancer distribution; crypto-rand not required
 	idx := sort.SearchInts(entry.cdf, n+1)
 	if idx >= len(entry.urls) {
 		return entry.urls[len(entry.urls)-1]

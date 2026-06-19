@@ -271,7 +271,11 @@ func hotReload(
 
 	// Release the old container after a brief grace period to let any request
 	// dispatched to the old handler just before the swap finish cleanly.
-	go func() {
+	// context.Background is intentional — this cleanup outlives the SIGHUP
+	// handler that scheduled it; tying it to the reload's caller context
+	// would risk leaking the previous container if SIGHUP fires multiple
+	// times in quick succession.
+	go func() { //nolint:gosec // G118: context.Background is required for post-SIGHUP cleanup lifetime
 		time.Sleep(5 * time.Second)
 		releaseCtx, releaseCancel := context.WithTimeout(context.Background(), 30*time.Second)
 		defer releaseCancel()

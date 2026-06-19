@@ -1,6 +1,6 @@
 // Package rlshard provides the shared sharding constants used by all in-memory
 // rate-limiter adapters (fixedwindow, slidingwindowcounter, slidingwindowlog,
-// leakybucket). Centralising these values ensures that all limiters behave
+// leakybucket). Centralizing these values ensures that all limiters behave
 // consistently and that changes to the shard count or eviction cadence only
 // need to be made in one place.
 package rlshard

@@ -31,7 +31,7 @@ func TestSetupTracing_Disabled(t *testing.T) {
 	}
 }
 
-// TestSetupTracing_StdoutExporter verifies that the "stdout" exporter initialises
+// TestSetupTracing_StdoutExporter verifies that the "stdout" exporter initializes
 // without error and returns a functional TracerProvider and shutdown function.
 func TestSetupTracing_StdoutExporter(t *testing.T) {
 	cfg := config.TracingConfig{
@@ -72,7 +72,7 @@ func TestSetupTracing_UnknownExporter(t *testing.T) {
 	}
 }
 
-// TestSetupTracing_OTLPExporter verifies that the "otlp" exporter initialises
+// TestSetupTracing_OTLPExporter verifies that the "otlp" exporter initializes
 // without error when a (non-existent) endpoint is configured. The OTLP exporter
 // is lazy — it does not connect until spans are exported, so the test just
 // checks that the TracerProvider and shutdown function are returned correctly.
@@ -103,7 +103,7 @@ func TestSetupTracing_OTLPExporter(t *testing.T) {
 }
 
 // TestSetupTracing_OTLPExporter_NoEndpoint verifies that the "otlp" exporter
-// initialises correctly even when OTLPEndpoint is empty — the SDK will use the
+// initializes correctly even when OTLPEndpoint is empty — the SDK will use the
 // OTEL_EXPORTER_OTLP_ENDPOINT env var or the default (localhost:4318).
 func TestSetupTracing_OTLPExporter_NoEndpoint(t *testing.T) {
 	cfg := config.TracingConfig{

@@ -73,7 +73,7 @@ func (t *Transport) Forward(w http.ResponseWriter, r *http.Request, route *domai
 }
 
 // breakerFor returns the circuit breaker for the given route name.
-// The fast path (already initialised route) is a single lock-free sync.Map.Load.
+// The fast path (already initialized route) is a single lock-free sync.Map.Load.
 // The slow path (first request to a new route) uses LoadOrStore so two concurrent
 // cold-start goroutines for the same route discard the duplicate and share one CB.
 func (t *Transport) breakerFor(routeName string) *gobreaker.CircuitBreaker {

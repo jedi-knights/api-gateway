@@ -4,6 +4,7 @@ package config_test
 
 import (
 	"os"
+	"path/filepath"
 	"testing"
 
 	"github.com/jedi-knights/api-gateway/internal/config"
@@ -12,6 +13,17 @@ import (
 func setenv(t *testing.T, key, value string) {
 	t.Helper()
 	t.Setenv(key, value)
+}
+
+// writeConfigFile creates a temp gateway.yaml under t.TempDir, writes yaml
+// into it, and returns the absolute path. Cleanup is handled by t.TempDir.
+func writeConfigFile(t *testing.T, yaml string) string {
+	t.Helper()
+	path := filepath.Join(t.TempDir(), "gateway.yaml")
+	if err := os.WriteFile(path, []byte(yaml), 0o600); err != nil {
+		t.Fatalf("writing config file: %v", err)
+	}
+	return path
 }
 
 func TestLoad_UsesDefaults(t *testing.T) {
@@ -70,18 +82,7 @@ server:
 log:
   level: "warn"
 `
-	f, err := os.CreateTemp("", "gateway-*.yaml")
-	if err != nil {
-		t.Fatalf("creating temp file: %v", err)
-	}
-	defer os.Remove(f.Name())
-
-	if _, err := f.WriteString(yaml); err != nil {
-		t.Fatalf("writing config file: %v", err)
-	}
-	f.Close()
-
-	setenv(t, "GATEWAY_CONFIG_FILE", f.Name())
+	setenv(t, "GATEWAY_CONFIG_FILE", writeConfigFile(t, yaml))
 
 	cfg, err := config.Load()
 	if err != nil {
@@ -108,17 +109,9 @@ routes:
     upstream:
       url: "http://svc2:8080"
 `
-	f, err := os.CreateTemp("", "gateway-*.yaml")
-	if err != nil {
-		t.Fatalf("creating temp file: %v", err)
-	}
-	defer os.Remove(f.Name())
-	_, _ = f.WriteString(yaml)
-	f.Close()
+	setenv(t, "GATEWAY_CONFIG_FILE", writeConfigFile(t, yaml))
 
-	setenv(t, "GATEWAY_CONFIG_FILE", f.Name())
-
-	_, err = config.Load()
+	_, err := config.Load()
 	if err == nil {
 		t.Fatal("expected error for duplicate route name, got nil")
 	}
@@ -130,17 +123,9 @@ routes:
   - upstream:
       url: "http://svc:8080"
 `
-	f, err := os.CreateTemp("", "gateway-*.yaml")
-	if err != nil {
-		t.Fatalf("creating temp file: %v", err)
-	}
-	defer os.Remove(f.Name())
-	_, _ = f.WriteString(yaml)
-	f.Close()
+	setenv(t, "GATEWAY_CONFIG_FILE", writeConfigFile(t, yaml))
 
-	setenv(t, "GATEWAY_CONFIG_FILE", f.Name())
-
-	_, err = config.Load()
+	_, err := config.Load()
 	if err == nil {
 		t.Fatal("expected error for missing route name, got nil")
 	}
@@ -153,35 +138,19 @@ routes:
     upstream:
       url: ""
 `
-	f, err := os.CreateTemp("", "gateway-*.yaml")
-	if err != nil {
-		t.Fatalf("creating temp file: %v", err)
-	}
-	defer os.Remove(f.Name())
-	_, _ = f.WriteString(yaml)
-	f.Close()
+	setenv(t, "GATEWAY_CONFIG_FILE", writeConfigFile(t, yaml))
 
-	setenv(t, "GATEWAY_CONFIG_FILE", f.Name())
-
-	_, err = config.Load()
+	_, err := config.Load()
 	if err == nil {
 		t.Fatal("expected error for empty upstream URL, got nil")
 	}
 }
 
 func TestLoad_InvalidConfigFileContentReturnsError(t *testing.T) {
-	f, err := os.CreateTemp("", "gateway-*.yaml")
-	if err != nil {
-		t.Fatalf("creating temp file: %v", err)
-	}
-	defer os.Remove(f.Name())
-	// Write deliberately malformed YAML — viper returns a parse error, not ConfigFileNotFoundError.
-	_, _ = f.WriteString("server:\n  port: [invalid yaml here\n")
-	f.Close()
+	// Deliberately malformed YAML — viper returns a parse error, not ConfigFileNotFoundError.
+	setenv(t, "GATEWAY_CONFIG_FILE", writeConfigFile(t, "server:\n  port: [invalid yaml here\n"))
 
-	setenv(t, "GATEWAY_CONFIG_FILE", f.Name())
-
-	_, err = config.Load()
+	_, err := config.Load()
 	if err == nil {
 		t.Fatal("expected error for malformed config file, got nil")
 	}
@@ -198,15 +167,7 @@ routes:
       url: "http://identity:8080"
       strip_prefix: "/api/identity"
 `
-	f, err := os.CreateTemp("", "gateway-*.yaml")
-	if err != nil {
-		t.Fatalf("creating temp file: %v", err)
-	}
-	defer os.Remove(f.Name())
-	_, _ = f.WriteString(yaml)
-	f.Close()
-
-	setenv(t, "GATEWAY_CONFIG_FILE", f.Name())
+	setenv(t, "GATEWAY_CONFIG_FILE", writeConfigFile(t, yaml))
 
 	cfg, err := config.Load()
 	if err != nil {

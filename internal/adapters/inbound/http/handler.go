@@ -17,6 +17,9 @@ import (
 	"github.com/jedi-knights/api-gateway/internal/ports"
 )
 
+// statusKey is the JSON field used by /health and /ready response bodies.
+const statusKey = "status"
+
 // headerPool reuses map[string]string allocations across Proxy calls.
 // Maps are pre-allocated with capacity 16 (covers most request header counts).
 // Each map is cleared before returning to the pool so stale entries cannot leak
@@ -70,7 +73,7 @@ func NewHandler(
 }
 
 // SetReady sets the gateway readiness state. Passing false causes Health to
-// return 503 immediately, signalling the load balancer to stop routing new
+// return 503 immediately, signaling the load balancer to stop routing new
 // traffic without terminating in-flight connections.
 func (h *Handler) SetReady(v bool) { h.ready.Store(v) }
 
@@ -139,14 +142,14 @@ func (h *Handler) Health(w http.ResponseWriter, r *http.Request) {
 	// ready so the load balancer drains this instance before server.Shutdown runs.
 	if !h.ready.Load() {
 		httputil.WriteJSON(w, http.StatusServiceUnavailable,
-			map[string]string{"status": "shutting_down"})
+			map[string]string{statusKey: "shutting_down"})
 		return
 	}
 
 	// When no aggregator is wired (e.g. in tests or minimal deployments),
 	// fall back to a simple static response.
 	if h.health == nil {
-		httputil.WriteJSON(w, http.StatusOK, map[string]string{"status": "ok"})
+		httputil.WriteJSON(w, http.StatusOK, map[string]string{statusKey: "ok"})
 		return
 	}
 
@@ -179,10 +182,10 @@ func (h *Handler) Health(w http.ResponseWriter, r *http.Request) {
 func (h *Handler) Ready(w http.ResponseWriter, _ *http.Request) {
 	if !h.ready.Load() {
 		httputil.WriteJSON(w, http.StatusServiceUnavailable,
-			map[string]string{"status": "not_ready"})
+			map[string]string{statusKey: "not_ready"})
 		return
 	}
-	httputil.WriteJSON(w, http.StatusOK, map[string]string{"status": "ready"})
+	httputil.WriteJSON(w, http.StatusOK, map[string]string{statusKey: "ready"})
 }
 
 // acquireHeaders gets a map from the pool and populates it from r's headers.

@@ -46,7 +46,7 @@ func New(ctx context.Context, cfg config.AuthConfig) (*Verifier, error) {
 	}
 	kf, err := keyfunc.NewDefaultCtx(ctx, []string{cfg.JWKSURL})
 	if err != nil {
-		return nil, fmt.Errorf("jwks: initialising keyfunc from %q: %w", cfg.JWKSURL, err)
+		return nil, fmt.Errorf("jwks: initializing keyfunc from %q: %w", cfg.JWKSURL, err)
 	}
 	return &Verifier{kf: kf, issuer: cfg.Issuer, audience: cfg.Audience}, nil
 }
