@@ -67,12 +67,12 @@ At startup the gateway sorts all routes by `path_prefix` length, **longest first
 
 ```mermaid
 flowchart TD
-    A[Incoming request<br/>GET /oauth/token] --> B{Try route 1<br/>/oauth/token ?}
-    B -- match --> C[Route: auth-server<br/>http://auth-server:8080]
-    B -- no match --> D{Try route 2<br/>/oauth ?}
+    A["Incoming request<br/>GET /oauth/token"] --> B{"Try route 1<br/>/oauth/token ?"}
+    B -- match --> C["Route: auth-server<br/>http://auth-server:8080"]
+    B -- "no match" --> D{"Try route 2<br/>/oauth ?"}
     D -- match --> C
-    D -- no match --> E{Try route N...}
-    E -- no match --> F[404 No route matched]
+    D -- "no match" --> E{"Try route N..."}
+    E -- "no match" --> F["404 No route matched"]
 ```
 
 Matching criteria can also filter by HTTP method and required headers — all three must pass for a route to apply:
