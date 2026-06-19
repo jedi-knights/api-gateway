@@ -1,4 +1,4 @@
-module github.com/ocrosby/identity-platform-go/services/api-gateway
+module github.com/jedi-knights/api-gateway
 
 go 1.26
 

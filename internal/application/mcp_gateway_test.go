@@ -9,7 +9,7 @@ import (
 
 	"github.com/jedi-knights/go-platform/jwtutil"
 
-	"github.com/ocrosby/identity-platform-go/services/api-gateway/internal/domain"
+	"github.com/jedi-knights/api-gateway/internal/domain"
 )
 
 // --- manual mocks ---

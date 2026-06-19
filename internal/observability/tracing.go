@@ -14,7 +14,7 @@ import (
 	"go.opentelemetry.io/otel/trace"
 	"go.opentelemetry.io/otel/trace/noop"
 
-	"github.com/ocrosby/identity-platform-go/services/api-gateway/internal/config"
+	"github.com/jedi-knights/api-gateway/internal/config"
 )
 
 // SetupTracing initialises the OpenTelemetry trace provider from cfg.

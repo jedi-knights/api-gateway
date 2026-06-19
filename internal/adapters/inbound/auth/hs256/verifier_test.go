@@ -9,7 +9,7 @@ import (
 
 	"github.com/jedi-knights/go-platform/jwtutil"
 
-	"github.com/ocrosby/identity-platform-go/services/api-gateway/internal/adapters/inbound/auth/hs256"
+	"github.com/jedi-knights/api-gateway/internal/adapters/inbound/auth/hs256"
 )
 
 var testKey = []byte("test-signing-key-that-is-at-least-32-chars!!")

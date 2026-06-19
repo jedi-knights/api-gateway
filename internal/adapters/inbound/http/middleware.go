@@ -23,8 +23,8 @@ import (
 
 	"github.com/jedi-knights/go-platform/httputil"
 
-	"github.com/ocrosby/identity-platform-go/services/api-gateway/internal/config"
-	"github.com/ocrosby/identity-platform-go/services/api-gateway/internal/ports"
+	"github.com/jedi-knights/api-gateway/internal/config"
+	"github.com/jedi-knights/api-gateway/internal/ports"
 )
 
 // isValidUUID reports whether s is a well-formed UUID v4 (lowercase hex, RFC 4122).

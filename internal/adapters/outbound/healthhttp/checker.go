@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/ocrosby/identity-platform-go/services/api-gateway/internal/ports"
+	"github.com/jedi-knights/api-gateway/internal/ports"
 )
 
 var _ ports.HealthChecker = (*Checker)(nil)

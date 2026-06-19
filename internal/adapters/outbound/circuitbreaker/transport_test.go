@@ -8,10 +8,10 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/ocrosby/identity-platform-go/services/api-gateway/internal/adapters/outbound/circuitbreaker"
-	"github.com/ocrosby/identity-platform-go/services/api-gateway/internal/config"
-	"github.com/ocrosby/identity-platform-go/services/api-gateway/internal/domain"
-	"github.com/ocrosby/identity-platform-go/services/api-gateway/internal/ports"
+	"github.com/jedi-knights/api-gateway/internal/adapters/outbound/circuitbreaker"
+	"github.com/jedi-knights/api-gateway/internal/config"
+	"github.com/jedi-knights/api-gateway/internal/domain"
+	"github.com/jedi-knights/api-gateway/internal/ports"
 )
 
 // cbConfig returns a CircuitBreakerConfig suitable for testing.

@@ -19,8 +19,8 @@ import (
 
 	"github.com/jedi-knights/go-platform/jwtutil"
 
-	"github.com/ocrosby/identity-platform-go/services/api-gateway/internal/adapters/inbound/auth/jwks"
-	"github.com/ocrosby/identity-platform-go/services/api-gateway/internal/config"
+	"github.com/jedi-knights/api-gateway/internal/adapters/inbound/auth/jwks"
+	"github.com/jedi-knights/api-gateway/internal/config"
 )
 
 func newRSAKey(t *testing.T) *rsa.PrivateKey {

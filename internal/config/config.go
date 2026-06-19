@@ -8,7 +8,7 @@ import (
 
 	"github.com/spf13/viper"
 
-	"github.com/ocrosby/identity-platform-go/services/api-gateway/internal/domain"
+	"github.com/jedi-knights/api-gateway/internal/domain"
 )
 
 // defaultMCPModel is used when no model is explicitly configured.

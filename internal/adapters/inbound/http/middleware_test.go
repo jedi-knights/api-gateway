@@ -17,9 +17,9 @@ import (
 
 	"github.com/jedi-knights/go-platform/jwtutil"
 
-	"github.com/ocrosby/identity-platform-go/services/api-gateway/internal/adapters/inbound/auth/hs256"
-	gatewayhttp "github.com/ocrosby/identity-platform-go/services/api-gateway/internal/adapters/inbound/http"
-	"github.com/ocrosby/identity-platform-go/services/api-gateway/internal/config"
+	"github.com/jedi-knights/api-gateway/internal/adapters/inbound/auth/hs256"
+	gatewayhttp "github.com/jedi-knights/api-gateway/internal/adapters/inbound/http"
+	"github.com/jedi-knights/api-gateway/internal/config"
 )
 
 // testSigningKey is the HMAC-SHA256 key used to sign tokens in all middleware tests.

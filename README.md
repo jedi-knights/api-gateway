@@ -1,16 +1,28 @@
 # api-gateway
 
-The api-gateway is the single entry point for all client traffic in the identity platform. It receives every inbound HTTP request, resolves the matching upstream service using longest-prefix route matching, and forwards the request using a reverse proxy. All cross-cutting concerns — authentication, rate limiting, circuit breaking, caching, compression, retries, IP filtering, and distributed tracing — are applied as composable middleware layers that can be enabled or disabled independently via configuration.
+A configurable Go reverse-proxy gateway. Receives inbound HTTP requests, resolves the matching upstream using longest-prefix route matching, and forwards through a reverse proxy. All cross-cutting concerns — authentication, rate limiting, circuit breaking, caching, compression, retries, IP filtering, distributed tracing, MCP tool routing — are applied as composable middleware layers that can be enabled or disabled independently via configuration.
+
+Originally built as the edge service for [`ocrosby/identity-platform-go`](https://github.com/ocrosby/identity-platform-go) and extracted into a standalone repository (`git subtree split`-preserved history) because it is generic infrastructure, not OAuth-specific.
+
+## Dependencies
+
+- [`github.com/jedi-knights/go-platform`](https://github.com/jedi-knights/go-platform) — `apperrors`, `container`, `httputil`
+- [`github.com/jedi-knights/go-logging`](https://github.com/jedi-knights/go-logging) — structured logging
 
 ## Quickstart
 
 ```bash
-# From the monorepo root
-task build                          # compile all services
-./bin/api-gateway serve             # start with gateway.yaml in the current directory
+go build ./...
+./api-gateway serve --config=./gateway.yaml
+```
 
-# Or with docker compose (starts the full stack)
-docker compose up --build
+Or via [Task](https://taskfile.dev):
+
+```bash
+task run                            # serves ./gateway.yaml
+task test                           # go test -tags=unit -race -count=1 ./...
+task lint                           # golangci-lint run ./...
+task ci                             # tidy → lint → test → build
 ```
 
 The gateway listens on `0.0.0.0:8080` by default. Override with `GATEWAY_SERVER_PORT`.

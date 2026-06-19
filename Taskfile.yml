@@ -1,0 +1,79 @@
+version: '3'
+
+vars:
+  PACKAGE: github.com/jedi-knights/api-gateway
+  COVERAGE_FILE: coverage.out
+  COVERAGE_HTML: coverage.html
+  TEST_TAGS: unit
+
+tasks:
+  default:
+    desc: Show available tasks
+    cmds:
+      - task --list
+
+  build:
+    desc: Build all packages
+    cmds:
+      - go build ./...
+
+  test:
+    desc: Run all tests with race detector
+    cmds:
+      - go test -tags={{.TEST_TAGS}} ./... -race -count=1
+
+  test-v:
+    desc: Run all tests verbosely with race detector
+    cmds:
+      - go test -tags={{.TEST_TAGS}} ./... -race -count=1 -v
+
+  cover:
+    desc: Run tests with coverage profile and HTML report
+    cmds:
+      - go test -tags={{.TEST_TAGS}} ./... -coverprofile={{.COVERAGE_FILE}}
+      - go tool cover -html={{.COVERAGE_FILE}} -o {{.COVERAGE_HTML}}
+      - echo "Coverage report written to {{.COVERAGE_HTML}}"
+    generates:
+      - "{{.COVERAGE_FILE}}"
+      - "{{.COVERAGE_HTML}}"
+
+  lint:
+    desc: Run golangci-lint
+    cmds:
+      - golangci-lint run ./...
+
+  lint-fix:
+    desc: Run golangci-lint with auto-fix
+    cmds:
+      - golangci-lint run --fix ./...
+
+  fmt:
+    desc: Format code
+    cmds:
+      - go fmt ./...
+
+  tidy:
+    desc: Tidy and verify go.mod
+    cmds:
+      - go mod tidy
+      - go mod verify
+
+  clean:
+    desc: Clean build artifacts
+    cmds:
+      - rm -f {{.COVERAGE_FILE}}
+      - rm -f {{.COVERAGE_HTML}}
+      - go clean ./...
+
+  run:
+    desc: Run the gateway against ./gateway.yaml (use task run -- --host 0.0.0.0)
+    cmds:
+      - go run ./cmd serve --config=./gateway.yaml {{.CLI_ARGS}}
+
+  ci:
+    desc: Run the full CI pipeline (tidy → lint → test → build)
+    cmds:
+      - task: tidy
+      - task: lint
+      - task: test
+      - task: build

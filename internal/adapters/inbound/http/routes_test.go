@@ -11,10 +11,10 @@ import (
 
 	"github.com/jedi-knights/go-logging/pkg/logging"
 
-	gatewayhttp "github.com/ocrosby/identity-platform-go/services/api-gateway/internal/adapters/inbound/http"
-	"github.com/ocrosby/identity-platform-go/services/api-gateway/internal/config"
-	"github.com/ocrosby/identity-platform-go/services/api-gateway/internal/domain"
-	"github.com/ocrosby/identity-platform-go/services/api-gateway/internal/ports"
+	gatewayhttp "github.com/jedi-knights/api-gateway/internal/adapters/inbound/http"
+	"github.com/jedi-knights/api-gateway/internal/config"
+	"github.com/jedi-knights/api-gateway/internal/domain"
+	"github.com/jedi-knights/api-gateway/internal/ports"
 )
 
 // newRouter builds a minimal router for tests:

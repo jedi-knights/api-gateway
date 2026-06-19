@@ -10,7 +10,7 @@ import (
 	"sync"
 	"sync/atomic"
 
-	"github.com/ocrosby/identity-platform-go/services/api-gateway/internal/ports"
+	"github.com/jedi-knights/api-gateway/internal/ports"
 )
 
 // Compile-time check: Picker must satisfy ports.URLPicker.

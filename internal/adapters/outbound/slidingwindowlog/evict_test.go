@@ -6,8 +6,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ocrosby/identity-platform-go/services/api-gateway/internal/adapters/outbound/rlshard"
-	"github.com/ocrosby/identity-platform-go/services/api-gateway/internal/domain"
+	"github.com/jedi-knights/api-gateway/internal/adapters/outbound/rlshard"
+	"github.com/jedi-knights/api-gateway/internal/domain"
 )
 
 func TestEvictStale_RemovesExpiredKey(t *testing.T) {

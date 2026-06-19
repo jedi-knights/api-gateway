@@ -7,10 +7,10 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/ocrosby/identity-platform-go/services/api-gateway/internal/adapters/outbound/proxy"
-	"github.com/ocrosby/identity-platform-go/services/api-gateway/internal/adapters/outbound/weighted"
-	"github.com/ocrosby/identity-platform-go/services/api-gateway/internal/domain"
-	"github.com/ocrosby/identity-platform-go/services/api-gateway/internal/ports"
+	"github.com/jedi-knights/api-gateway/internal/adapters/outbound/proxy"
+	"github.com/jedi-knights/api-gateway/internal/adapters/outbound/weighted"
+	"github.com/jedi-knights/api-gateway/internal/domain"
+	"github.com/jedi-knights/api-gateway/internal/ports"
 )
 
 func TestWeightedTransport_ImplementsUpstreamTransport(t *testing.T) {

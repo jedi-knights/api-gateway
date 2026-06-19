@@ -5,8 +5,8 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/ocrosby/identity-platform-go/services/api-gateway/internal/domain"
-	"github.com/ocrosby/identity-platform-go/services/api-gateway/internal/ports"
+	"github.com/jedi-knights/api-gateway/internal/domain"
+	"github.com/jedi-knights/api-gateway/internal/ports"
 )
 
 // HealthAggregator concurrently checks health of all downstream services.

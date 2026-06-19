@@ -16,11 +16,11 @@ import (
 	"github.com/jedi-knights/go-logging/pkg/logging"
 	platform "github.com/jedi-knights/go-platform/container"
 
-	inboundhttp "github.com/ocrosby/identity-platform-go/services/api-gateway/internal/adapters/inbound/http"
-	"github.com/ocrosby/identity-platform-go/services/api-gateway/internal/config"
-	"github.com/ocrosby/identity-platform-go/services/api-gateway/internal/container"
-	"github.com/ocrosby/identity-platform-go/services/api-gateway/internal/observability"
-	"github.com/ocrosby/identity-platform-go/services/api-gateway/internal/reload"
+	inboundhttp "github.com/jedi-knights/api-gateway/internal/adapters/inbound/http"
+	"github.com/jedi-knights/api-gateway/internal/config"
+	"github.com/jedi-knights/api-gateway/internal/container"
+	"github.com/jedi-knights/api-gateway/internal/observability"
+	"github.com/jedi-knights/api-gateway/internal/reload"
 )
 
 func newServeCmd() *cobra.Command {

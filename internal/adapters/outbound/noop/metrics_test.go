@@ -5,8 +5,8 @@ package noop_test
 import (
 	"testing"
 
-	"github.com/ocrosby/identity-platform-go/services/api-gateway/internal/adapters/outbound/noop"
-	"github.com/ocrosby/identity-platform-go/services/api-gateway/internal/ports"
+	"github.com/jedi-knights/api-gateway/internal/adapters/outbound/noop"
+	"github.com/jedi-knights/api-gateway/internal/ports"
 )
 
 func TestMetricsRecorder_RecordRequest_DoesNotPanic(t *testing.T) {

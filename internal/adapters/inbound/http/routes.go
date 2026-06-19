@@ -9,9 +9,9 @@ import (
 
 	"github.com/jedi-knights/go-platform/httputil"
 
-	_ "github.com/ocrosby/identity-platform-go/services/api-gateway/docs"
-	"github.com/ocrosby/identity-platform-go/services/api-gateway/internal/config"
-	"github.com/ocrosby/identity-platform-go/services/api-gateway/internal/ports"
+	_ "github.com/jedi-knights/api-gateway/docs"
+	"github.com/jedi-knights/api-gateway/internal/config"
+	"github.com/jedi-knights/api-gateway/internal/ports"
 )
 
 // NewRouter registers all routes and applies the middleware chain.

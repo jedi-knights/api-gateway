@@ -8,7 +8,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/ocrosby/identity-platform-go/services/api-gateway/internal/domain"
+	"github.com/jedi-knights/api-gateway/internal/domain"
 )
 
 func TestStatusRecorder_WriteHeader_CapturesStatus(t *testing.T) {

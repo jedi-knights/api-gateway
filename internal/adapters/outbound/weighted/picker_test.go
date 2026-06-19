@@ -5,7 +5,7 @@ package weighted_test
 import (
 	"testing"
 
-	"github.com/ocrosby/identity-platform-go/services/api-gateway/internal/adapters/outbound/weighted"
+	"github.com/jedi-knights/api-gateway/internal/adapters/outbound/weighted"
 )
 
 func TestPicker_Pick_EmptyURLsReturnsEmpty(t *testing.T) {

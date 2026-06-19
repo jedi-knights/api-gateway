@@ -6,8 +6,8 @@ import (
 
 	"github.com/jedi-knights/go-platform/apperrors"
 
-	"github.com/ocrosby/identity-platform-go/services/api-gateway/internal/domain"
-	"github.com/ocrosby/identity-platform-go/services/api-gateway/internal/ports"
+	"github.com/jedi-knights/api-gateway/internal/domain"
+	"github.com/jedi-knights/api-gateway/internal/ports"
 )
 
 // Resolver implements ports.RouteResolver using a static list of routes loaded

@@ -4,7 +4,7 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/ocrosby/identity-platform-go/services/api-gateway/internal/domain"
+	"github.com/jedi-knights/api-gateway/internal/domain"
 )
 
 // RouteResolver resolves request paths to backend routes using longest-prefix matching.

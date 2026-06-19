@@ -8,9 +8,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ocrosby/identity-platform-go/services/api-gateway/internal/adapters/outbound/leakybucket"
-	"github.com/ocrosby/identity-platform-go/services/api-gateway/internal/domain"
-	"github.com/ocrosby/identity-platform-go/services/api-gateway/internal/ports"
+	"github.com/jedi-knights/api-gateway/internal/adapters/outbound/leakybucket"
+	"github.com/jedi-knights/api-gateway/internal/domain"
+	"github.com/jedi-knights/api-gateway/internal/ports"
 )
 
 var _ ports.RateLimiter = (*leakybucket.RateLimiter)(nil)

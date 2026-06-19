@@ -8,7 +8,7 @@ import (
 
 	"github.com/jedi-knights/go-logging/pkg/logging"
 
-	"github.com/ocrosby/identity-platform-go/services/api-gateway/internal/observability"
+	"github.com/jedi-knights/api-gateway/internal/observability"
 )
 
 func TestSetup_ReturnsLogger(t *testing.T) {

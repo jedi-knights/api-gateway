@@ -20,8 +20,8 @@ import (
 
 	"github.com/cenkalti/backoff/v5"
 
-	"github.com/ocrosby/identity-platform-go/services/api-gateway/internal/domain"
-	"github.com/ocrosby/identity-platform-go/services/api-gateway/internal/ports"
+	"github.com/jedi-knights/api-gateway/internal/domain"
+	"github.com/jedi-knights/api-gateway/internal/ports"
 )
 
 // recorderPool reuses ResponseRecorder allocations across retry attempts.

@@ -3,7 +3,7 @@ package ports
 import (
 	"context"
 
-	"github.com/ocrosby/identity-platform-go/services/api-gateway/internal/domain"
+	"github.com/jedi-knights/api-gateway/internal/domain"
 )
 
 // MCPInvoker is the inbound application port for MCP tool invocations.

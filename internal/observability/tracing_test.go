@@ -6,8 +6,8 @@ import (
 	"context"
 	"testing"
 
-	"github.com/ocrosby/identity-platform-go/services/api-gateway/internal/config"
-	"github.com/ocrosby/identity-platform-go/services/api-gateway/internal/observability"
+	"github.com/jedi-knights/api-gateway/internal/config"
+	"github.com/jedi-knights/api-gateway/internal/observability"
 )
 
 // TestSetupTracing_Disabled verifies that when tracing is disabled, SetupTracing

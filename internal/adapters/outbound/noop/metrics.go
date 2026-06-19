@@ -1,6 +1,6 @@
 package noop
 
-import "github.com/ocrosby/identity-platform-go/services/api-gateway/internal/ports"
+import "github.com/jedi-knights/api-gateway/internal/ports"
 
 // MetricsRecorder is a no-op implementation of ports.MetricsRecorder.
 // It is the default metrics adapter — safe to use without any observability

@@ -13,8 +13,8 @@ import (
 
 	"github.com/jedi-knights/go-platform/httputil"
 
-	"github.com/ocrosby/identity-platform-go/services/api-gateway/internal/application"
-	"github.com/ocrosby/identity-platform-go/services/api-gateway/internal/ports"
+	"github.com/jedi-knights/api-gateway/internal/application"
+	"github.com/jedi-knights/api-gateway/internal/ports"
 )
 
 // headerPool reuses map[string]string allocations across Proxy calls.

@@ -3,7 +3,7 @@ package ports
 import (
 	"context"
 
-	"github.com/ocrosby/identity-platform-go/services/api-gateway/internal/domain"
+	"github.com/jedi-knights/api-gateway/internal/domain"
 )
 
 // RequestRouter is the primary inbound application port for the gateway use case.

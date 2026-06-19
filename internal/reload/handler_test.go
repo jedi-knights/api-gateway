@@ -7,7 +7,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/ocrosby/identity-platform-go/services/api-gateway/internal/reload"
+	"github.com/jedi-knights/api-gateway/internal/reload"
 )
 
 func makeHandler(body string, status int) http.Handler {

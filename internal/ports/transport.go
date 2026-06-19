@@ -3,7 +3,7 @@ package ports
 import (
 	"net/http"
 
-	"github.com/ocrosby/identity-platform-go/services/api-gateway/internal/domain"
+	"github.com/jedi-knights/api-gateway/internal/domain"
 )
 
 // UpstreamTransport is the outbound port for forwarding requests to upstream services.

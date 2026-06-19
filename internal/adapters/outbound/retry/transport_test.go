@@ -10,9 +10,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ocrosby/identity-platform-go/services/api-gateway/internal/adapters/outbound/retry"
-	"github.com/ocrosby/identity-platform-go/services/api-gateway/internal/domain"
-	"github.com/ocrosby/identity-platform-go/services/api-gateway/internal/ports"
+	"github.com/jedi-knights/api-gateway/internal/adapters/outbound/retry"
+	"github.com/jedi-knights/api-gateway/internal/domain"
+	"github.com/jedi-knights/api-gateway/internal/ports"
 )
 
 // countingTransport records call count and returns a fixed status code each call.

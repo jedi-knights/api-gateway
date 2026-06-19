@@ -10,8 +10,8 @@ import (
 
 	"github.com/jedi-knights/go-platform/httputil"
 
-	"github.com/ocrosby/identity-platform-go/services/api-gateway/internal/domain"
-	"github.com/ocrosby/identity-platform-go/services/api-gateway/internal/ports"
+	"github.com/jedi-knights/api-gateway/internal/domain"
+	"github.com/jedi-knights/api-gateway/internal/ports"
 )
 
 // mcpInvokeBody is the expected JSON body for POST /mcp/tools/{toolName}.

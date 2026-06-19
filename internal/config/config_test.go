@@ -5,7 +5,7 @@ package config_test
 import (
 	"testing"
 
-	"github.com/ocrosby/identity-platform-go/services/api-gateway/internal/config"
+	"github.com/jedi-knights/api-gateway/internal/config"
 )
 
 func TestConfig_ToDomainRoutes_MapsAllFields(t *testing.T) {

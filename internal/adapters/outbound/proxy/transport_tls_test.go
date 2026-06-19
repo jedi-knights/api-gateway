@@ -7,8 +7,8 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/ocrosby/identity-platform-go/services/api-gateway/internal/adapters/outbound/proxy"
-	"github.com/ocrosby/identity-platform-go/services/api-gateway/internal/domain"
+	"github.com/jedi-knights/api-gateway/internal/adapters/outbound/proxy"
+	"github.com/jedi-knights/api-gateway/internal/domain"
 )
 
 // TestTransport_TLS_InsecureSkipVerify_ConnectsToTLSServer verifies that a route

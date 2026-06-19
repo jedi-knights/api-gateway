@@ -6,8 +6,8 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/ocrosby/identity-platform-go/services/api-gateway/internal/adapters/outbound/roundrobin"
-	"github.com/ocrosby/identity-platform-go/services/api-gateway/internal/ports"
+	"github.com/jedi-knights/api-gateway/internal/adapters/outbound/roundrobin"
+	"github.com/jedi-knights/api-gateway/internal/ports"
 )
 
 // --- Compile-time interface check ---

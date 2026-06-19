@@ -5,7 +5,7 @@ package hs256
 import (
 	"github.com/jedi-knights/go-platform/jwtutil"
 
-	"github.com/ocrosby/identity-platform-go/services/api-gateway/internal/ports"
+	"github.com/jedi-knights/api-gateway/internal/ports"
 )
 
 // Compile-time check: Verifier must satisfy ports.TokenVerifier.
