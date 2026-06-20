@@ -2,6 +2,9 @@
 
 A configurable Go reverse-proxy gateway. Receives inbound HTTP requests, resolves the matching upstream using longest-prefix route matching, and forwards through a reverse proxy. All cross-cutting concerns — authentication, rate limiting, circuit breaking, caching, compression, retries, IP filtering, distributed tracing, MCP tool routing — are applied as composable middleware layers that can be enabled or disabled independently via configuration.
 
+![CI](https://github.com/jedi-knights/api-gateway/actions/workflows/ci.yml/badge.svg)
+![Deploy](https://github.com/jedi-knights/api-gateway/actions/workflows/deploy.yml/badge.svg)
+
 Originally built as the edge service for [`ocrosby/identity-platform-go`](https://github.com/ocrosby/identity-platform-go) and extracted into a standalone repository (`git subtree split`-preserved history) because it is generic infrastructure, not OAuth-specific.
 
 ## Dependencies
@@ -35,6 +38,134 @@ The gateway listens on `0.0.0.0:8080` by default. Override with `GATEWAY_SERVER_
 | `GET /ready` | Readiness probe (local state only; used by load balancers) |
 | `GET /metrics` | Prometheus metrics |
 | `GET /swagger/` | OpenAPI documentation |
+
+---
+
+## Deployment (Fly.io)
+
+The repo ships a `Dockerfile`, a `.dockerignore`, and a `fly.toml` configured for a
+highly-available, always-on edge gateway (two `shared-cpu-1x` / 512MB machines, no
+scale-to-zero). The image is a static binary on `distroless/static`; `gateway.yaml` is baked
+in at `/etc/gateway/gateway.yaml`.
+
+### Accessing the deployed gateway
+
+The gateway is served at **`https://jk-api-gateway.fly.dev`**. HTTP is redirected to HTTPS
+(`force_https`). All client traffic enters here; the system endpoints from
+[System endpoints](#system-endpoints-always-reachable-bypass-all-auth-and-rate-limiting) are
+reachable at that base URL:
+
+```bash
+curl -fsS https://jk-api-gateway.fly.dev/ready     # 200 when the instance is in rotation
+curl -fsS https://jk-api-gateway.fly.dev/health    # upstream-aggregated health
+curl      https://jk-api-gateway.fly.dev/metrics   # Prometheus metrics
+open       https://jk-api-gateway.fly.dev/swagger/ # OpenAPI docs
+```
+
+Application traffic is reached by the route's `path_prefix` — e.g. a request to
+`https://jk-api-gateway.fly.dev/oauth/token` is proxied to whichever upstream owns `/oauth`.
+
+### First deploy
+
+```bash
+fly apps create jk-api-gateway   # reserve the globally-unique app name
+fly deploy                       # builds the image and releases
+fly status                       # confirm both machines are passing
+curl -fsS https://jk-api-gateway.fly.dev/ready
+```
+
+`fly deploy` provisions **two** machines automatically because `fly.toml` sets
+`min_machines_running = 2` — no separate `fly scale count` step is needed for HA.
+
+### Routing to upstreams
+
+Point each route in `gateway.yaml` at another Fly app over private networking rather than a
+public URL:
+
+```yaml
+upstream:
+  url: "http://my-service.internal:8080"   # Fly private DNS; backends stay private
+```
+
+Routes are loaded once at startup — there is no hot reload, so changing a route means
+rebuild + redeploy (`fly deploy`).
+
+### Secrets
+
+`gateway.yaml` is committed and baked into the image, so it must **never contain secret
+values**. Instead, every config field has an environment-variable twin (`GATEWAY_` + the
+dotted path with `.` replaced by `_`), and Fly secrets are injected as those env vars at
+runtime — overriding the YAML field without the value ever touching git or the image.
+
+Leave the secret field blank in `gateway.yaml`:
+
+```yaml
+auth:
+  enabled: true
+  type: "hs256"
+  signing_key: ""        # supplied at runtime by the secret below
+```
+
+Then set it with `fly secrets set` (encrypted at rest):
+
+```bash
+fly secrets set GATEWAY_AUTH_SIGNING_KEY='your-signing-key' -a jk-api-gateway
+
+# Multiple at once (e.g. an mTLS upstream key):
+fly secrets set \
+  GATEWAY_AUTH_SIGNING_KEY='your-signing-key' \
+  GATEWAY_AUTH_ISSUER='https://issuer.example.com' \
+  -a jk-api-gateway
+
+# Read a secret value in from a file instead of the shell history:
+fly secrets set GATEWAY_AUTH_SIGNING_KEY="$(cat signing.key)" -a jk-api-gateway
+```
+
+Manage them with:
+
+```bash
+fly secrets list   -a jk-api-gateway   # shows names + a digest, never the values
+fly secrets unset  GATEWAY_AUTH_SIGNING_KEY -a jk-api-gateway
+```
+
+Field-name mapping examples (YAML path → secret name):
+
+| `gateway.yaml` field | Secret / env var |
+|---|---|
+| `auth.signing_key` | `GATEWAY_AUTH_SIGNING_KEY` |
+| `auth.issuer` | `GATEWAY_AUTH_ISSUER` |
+| `auth.audience` | `GATEWAY_AUTH_AUDIENCE` |
+
+Notes:
+
+- **`fly secrets set` triggers a rolling restart** of all machines so they pick up the new
+  value — you do **not** need a redeploy. (Editing a *route*, by contrast, means rebuild +
+  `fly deploy`, since routes are baked in and loaded once at startup.)
+- **Never put secrets in `fly.toml`'s `[env]` block** — that file is committed, so it is
+  plaintext. `[env]` is for non-secret values only (port, log level/format).
+- **Routes cannot be set via env vars** — they are a list of structs. Only scalar fields
+  (keys, issuer, audience, etc.) override cleanly, which is why routes stay in the committed
+  `gateway.yaml` and only secret scalars come from `fly secrets`.
+- With auth disabled (the default), the gateway needs **no secrets at all** — it runs on the
+  committed `gateway.yaml` alone.
+
+### Client IPs
+
+Behind Fly's proxy, set `rate_limit.key_source: "x-forwarded-for"` so each end user gets
+their own bucket — `RemoteAddr` would otherwise be the proxy's address.
+
+### Continuous deployment
+
+`.github/workflows/deploy.yml` runs `flyctl deploy` on every push to `main`. It authenticates
+with a `FLY_API_TOKEN` secret. This is configured as a **`jedi-knights` organization secret**
+(shared across all the org's app repos) rather than a per-repo secret:
+
+```bash
+fly tokens create org <org-slug>   # org-wide token; store as the GitHub org secret FLY_API_TOKEN
+```
+
+A repo-level `FLY_API_TOKEN` would override the org secret for that repo, so leave it unset
+here to inherit the org-wide token.
 
 ---
 
