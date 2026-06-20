@@ -1,0 +1,42 @@
+# Fly.io deployment configuration for api-gateway.
+# See README "Deployment (Fly.io)" for the full workflow.
+
+app            = "jedi-knights-api-gateway"  # adjust at `fly launch` if taken
+primary_region = "iad"                       # set to the region closest to clients
+
+# Fly sends kill_signal then SIGKILLs after kill_timeout. The gateway's
+# two-phase shutdown is SetReady(false) -> drain (drain_timeout_secs, default 5)
+# -> server.Shutdown. The default 5s kill_timeout is too short to cover that.
+kill_signal  = "SIGTERM"
+kill_timeout = "30s"
+
+[build]
+  # Uses ./Dockerfile. Version metadata is optional; the CD workflow passes it.
+  [build.args]
+    VERSION = "fly"
+
+[env]
+  GATEWAY_SERVER_PORT = "8080"
+  GATEWAY_LOG_FORMAT  = "json"
+  GATEWAY_LOG_LEVEL   = "info"
+
+[http_service]
+  internal_port        = 8080
+  force_https          = true
+  # Always-on edge gateway: no scale-to-zero (cold starts hurt on the ingress path).
+  auto_stop_machines   = "off"
+  auto_start_machines  = false
+  min_machines_running = 2
+
+  # Probe /ready (local readiness), not /health (which aggregates upstream health
+  # and would flap this machine out whenever any upstream is down).
+  [[http_service.checks]]
+    path         = "/ready"
+    method       = "GET"
+    interval     = "10s"
+    timeout      = "2s"
+    grace_period = "5s"
+
+[[vm]]
+  size   = "shared-cpu-1x"
+  memory = "512mb"

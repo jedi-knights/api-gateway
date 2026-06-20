@@ -2,6 +2,9 @@
 
 A configurable Go reverse-proxy gateway. Receives inbound HTTP requests, resolves the matching upstream using longest-prefix route matching, and forwards through a reverse proxy. All cross-cutting concerns — authentication, rate limiting, circuit breaking, caching, compression, retries, IP filtering, distributed tracing, MCP tool routing — are applied as composable middleware layers that can be enabled or disabled independently via configuration.
 
+![CI](https://github.com/jedi-knights/api-gateway/actions/workflows/ci.yml/badge.svg)
+![Deploy](https://github.com/jedi-knights/api-gateway/actions/workflows/deploy.yml/badge.svg)
+
 Originally built as the edge service for [`ocrosby/identity-platform-go`](https://github.com/ocrosby/identity-platform-go) and extracted into a standalone repository (`git subtree split`-preserved history) because it is generic infrastructure, not OAuth-specific.
 
 ## Dependencies
@@ -35,6 +38,56 @@ The gateway listens on `0.0.0.0:8080` by default. Override with `GATEWAY_SERVER_
 | `GET /ready` | Readiness probe (local state only; used by load balancers) |
 | `GET /metrics` | Prometheus metrics |
 | `GET /swagger/` | OpenAPI documentation |
+
+---
+
+## Deployment (Fly.io)
+
+The repo ships a `Dockerfile`, a `.dockerignore`, and a `fly.toml` configured for a
+highly-available, always-on edge gateway (two `shared-cpu-1x` / 512MB machines, no
+scale-to-zero). The image is a static binary on `distroless/static`; `gateway.yaml` is baked
+in at `/etc/gateway/gateway.yaml`.
+
+### First deploy
+
+```bash
+fly launch --no-deploy        # creates the app; keep the committed fly.toml
+fly deploy                     # builds the image and releases
+fly scale count 2              # establish two-machine HA
+fly status                     # confirm both machines are passing
+curl -fsS https://<app>.fly.dev/ready
+```
+
+### Routing to upstreams
+
+Point each route in `gateway.yaml` at another Fly app over private networking rather than a
+public URL:
+
+```yaml
+upstream:
+  url: "http://my-service.internal:8080"   # Fly private DNS; backends stay private
+```
+
+Routes are loaded once at startup — there is no hot reload, so changing a route means
+rebuild + redeploy (`fly deploy`).
+
+### Secrets and client IPs
+
+```bash
+fly secrets set GATEWAY_AUTH_SIGNING_KEY=...   # only if HS256 auth is enabled
+```
+
+Behind Fly's proxy, set `rate_limit.key_source: "x-forwarded-for"` so each end user gets
+their own bucket — `RemoteAddr` would otherwise be the proxy's address.
+
+### Continuous deployment
+
+`.github/workflows/deploy.yml` runs `flyctl deploy` on every push to `main`. It requires a
+`FLY_API_TOKEN` repository secret:
+
+```bash
+fly tokens create deploy        # paste the output into the GitHub repo secret
+```
 
 ---
 

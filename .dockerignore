@@ -1,0 +1,17 @@
+# Keep the build context small: only Go sources + gateway.yaml are needed.
+.git
+.github
+.gitignore
+*.md
+
+# Test / coverage artifacts
+*.test
+*.out
+coverage.out
+coverage.html
+
+# Local tooling and editor noise
+TODO.md
+.DS_Store
+.golangci.yml
+Taskfile.yml
