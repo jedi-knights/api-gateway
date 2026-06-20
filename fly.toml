@@ -1,8 +1,8 @@
 # Fly.io deployment configuration for api-gateway.
 # See README "Deployment (Fly.io)" for the full workflow.
 
-app            = "jedi-knights-api-gateway"  # adjust at `fly launch` if taken
-primary_region = "iad"                       # set to the region closest to clients
+app            = "jk-api-gateway"  # globally unique; use the jk-* prefix for all apps
+primary_region = "iad"             # co-located with upstreams (same-region private traffic)
 
 # Fly sends kill_signal then SIGKILLs after kill_timeout. The gateway's
 # two-phase shutdown is SetReady(false) -> drain (drain_timeout_secs, default 5)
