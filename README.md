@@ -48,15 +48,34 @@ highly-available, always-on edge gateway (two `shared-cpu-1x` / 512MB machines, 
 scale-to-zero). The image is a static binary on `distroless/static`; `gateway.yaml` is baked
 in at `/etc/gateway/gateway.yaml`.
 
+### Accessing the deployed gateway
+
+The gateway is served at **`https://jk-api-gateway.fly.dev`**. HTTP is redirected to HTTPS
+(`force_https`). All client traffic enters here; the system endpoints from
+[System endpoints](#system-endpoints-always-reachable-bypass-all-auth-and-rate-limiting) are
+reachable at that base URL:
+
+```bash
+curl -fsS https://jk-api-gateway.fly.dev/ready     # 200 when the instance is in rotation
+curl -fsS https://jk-api-gateway.fly.dev/health    # upstream-aggregated health
+curl      https://jk-api-gateway.fly.dev/metrics   # Prometheus metrics
+open       https://jk-api-gateway.fly.dev/swagger/ # OpenAPI docs
+```
+
+Application traffic is reached by the route's `path_prefix` — e.g. a request to
+`https://jk-api-gateway.fly.dev/oauth/token` is proxied to whichever upstream owns `/oauth`.
+
 ### First deploy
 
 ```bash
-fly launch --no-deploy        # creates the app; keep the committed fly.toml
-fly deploy                     # builds the image and releases
-fly scale count 2              # establish two-machine HA
-fly status                     # confirm both machines are passing
-curl -fsS https://<app>.fly.dev/ready
+fly apps create jk-api-gateway   # reserve the globally-unique app name
+fly deploy                       # builds the image and releases
+fly status                       # confirm both machines are passing
+curl -fsS https://jk-api-gateway.fly.dev/ready
 ```
+
+`fly deploy` provisions **two** machines automatically because `fly.toml` sets
+`min_machines_running = 2` — no separate `fly scale count` step is needed for HA.
 
 ### Routing to upstreams
 
@@ -82,12 +101,16 @@ their own bucket — `RemoteAddr` would otherwise be the proxy's address.
 
 ### Continuous deployment
 
-`.github/workflows/deploy.yml` runs `flyctl deploy` on every push to `main`. It requires a
-`FLY_API_TOKEN` repository secret:
+`.github/workflows/deploy.yml` runs `flyctl deploy` on every push to `main`. It authenticates
+with a `FLY_API_TOKEN` secret. This is configured as a **`jedi-knights` organization secret**
+(shared across all the org's app repos) rather than a per-repo secret:
 
 ```bash
-fly tokens create deploy        # paste the output into the GitHub repo secret
+fly tokens create org <org-slug>   # org-wide token; store as the GitHub org secret FLY_API_TOKEN
 ```
+
+A repo-level `FLY_API_TOKEN` would override the org secret for that repo, so leave it unset
+here to inherit the org-wide token.
 
 ---
 
