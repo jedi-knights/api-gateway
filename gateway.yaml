@@ -168,16 +168,16 @@ retry:
 # Routes — ordered list of proxy rules evaluated top-to-bottom.
 # The first rule whose path_prefix matches the incoming request wins.
 #
-# Internal ports are the container ports (not the remapped host ports):
-#   auth-server:8080, identity-service:8081, client-registry-service:8082,
-#   token-introspection-service:8083, authorization-policy-service:8084,
-#   example-resource-service:8085
+# Upstreams are the identity-platform services on Fly, reached over the private
+# .internal network (https://github.com/jedi-knights/identity-platform-go):
+#   jk-auth-server:8080, jk-identity-service:8081, jk-client-registry-service:8082,
+#   jk-token-introspection-service:8083, jk-authorization-policy-service:8084
 routes:
   - name: "auth-server"
     match:
       path_prefix: "/oauth"
     upstream:
-      url: "http://auth-server:8080"
+      url: "http://jk-auth-server.internal:8080"
       strip_prefix: ""
       timeout_secs: 10
 
@@ -185,7 +185,7 @@ routes:
     match:
       path_prefix: "/auth"
     upstream:
-      url: "http://identity-service:8081"
+      url: "http://jk-identity-service.internal:8081"
       strip_prefix: ""
       timeout_secs: 10
 
@@ -193,7 +193,7 @@ routes:
     match:
       path_prefix: "/clients"
     upstream:
-      url: "http://client-registry-service:8082"
+      url: "http://jk-client-registry-service.internal:8082"
       strip_prefix: ""
       timeout_secs: 10
 
@@ -201,7 +201,7 @@ routes:
     match:
       path_prefix: "/introspect"
     upstream:
-      url: "http://token-introspection-service:8083"
+      url: "http://jk-token-introspection-service.internal:8083"
       strip_prefix: ""
       timeout_secs: 10
 
@@ -209,14 +209,6 @@ routes:
     match:
       path_prefix: "/evaluate"
     upstream:
-      url: "http://authorization-policy-service:8084"
-      strip_prefix: ""
-      timeout_secs: 10
-
-  - name: "example-resource-service"
-    match:
-      path_prefix: "/resources"
-    upstream:
-      url: "http://example-resource-service:8085"
+      url: "http://jk-authorization-policy-service.internal:8084"
       strip_prefix: ""
       timeout_secs: 10
