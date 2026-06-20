@@ -90,11 +90,66 @@ upstream:
 Routes are loaded once at startup — there is no hot reload, so changing a route means
 rebuild + redeploy (`fly deploy`).
 
-### Secrets and client IPs
+### Secrets
+
+`gateway.yaml` is committed and baked into the image, so it must **never contain secret
+values**. Instead, every config field has an environment-variable twin (`GATEWAY_` + the
+dotted path with `.` replaced by `_`), and Fly secrets are injected as those env vars at
+runtime — overriding the YAML field without the value ever touching git or the image.
+
+Leave the secret field blank in `gateway.yaml`:
+
+```yaml
+auth:
+  enabled: true
+  type: "hs256"
+  signing_key: ""        # supplied at runtime by the secret below
+```
+
+Then set it with `fly secrets set` (encrypted at rest):
 
 ```bash
-fly secrets set GATEWAY_AUTH_SIGNING_KEY=...   # only if HS256 auth is enabled
+fly secrets set GATEWAY_AUTH_SIGNING_KEY='your-signing-key' -a jk-api-gateway
+
+# Multiple at once (e.g. an mTLS upstream key):
+fly secrets set \
+  GATEWAY_AUTH_SIGNING_KEY='your-signing-key' \
+  GATEWAY_AUTH_ISSUER='https://issuer.example.com' \
+  -a jk-api-gateway
+
+# Read a secret value in from a file instead of the shell history:
+fly secrets set GATEWAY_AUTH_SIGNING_KEY="$(cat signing.key)" -a jk-api-gateway
 ```
+
+Manage them with:
+
+```bash
+fly secrets list   -a jk-api-gateway   # shows names + a digest, never the values
+fly secrets unset  GATEWAY_AUTH_SIGNING_KEY -a jk-api-gateway
+```
+
+Field-name mapping examples (YAML path → secret name):
+
+| `gateway.yaml` field | Secret / env var |
+|---|---|
+| `auth.signing_key` | `GATEWAY_AUTH_SIGNING_KEY` |
+| `auth.issuer` | `GATEWAY_AUTH_ISSUER` |
+| `auth.audience` | `GATEWAY_AUTH_AUDIENCE` |
+
+Notes:
+
+- **`fly secrets set` triggers a rolling restart** of all machines so they pick up the new
+  value — you do **not** need a redeploy. (Editing a *route*, by contrast, means rebuild +
+  `fly deploy`, since routes are baked in and loaded once at startup.)
+- **Never put secrets in `fly.toml`'s `[env]` block** — that file is committed, so it is
+  plaintext. `[env]` is for non-secret values only (port, log level/format).
+- **Routes cannot be set via env vars** — they are a list of structs. Only scalar fields
+  (keys, issuer, audience, etc.) override cleanly, which is why routes stay in the committed
+  `gateway.yaml` and only secret scalars come from `fly secrets`.
+- With auth disabled (the default), the gateway needs **no secrets at all** — it runs on the
+  committed `gateway.yaml` alone.
+
+### Client IPs
 
 Behind Fly's proxy, set `rate_limit.key_source: "x-forwarded-for"` so each end user gets
 their own bucket — `RemoteAddr` would otherwise be the proxy's address.
