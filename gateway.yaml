@@ -213,13 +213,16 @@ routes:
       strip_prefix: ""
       timeout_secs: 10
 
-  # NWSL MCP server (Streamable HTTP transport, served at /mcp). Reached over
-  # flycast — a private IP through Fly's proxy — because the app is scale-to-zero
-  # (auto_stop); flycast auto-starts a stopped machine, whereas plain .internal
-  # would not. websocket: true keeps the SSE/streaming responses unbuffered.
+  # MCP servers are namespaced under /mcp/<name>. Each server serves at its own
+  # /mcp/<name> path, so the gateway forwards the path unchanged (no strip_prefix
+  # rewrite). Add a new server by deploying jk-mcp-<name> and copying this block.
+  #
+  # Reached over flycast — a private IP through Fly's proxy — because the app is
+  # scale-to-zero (auto_stop); flycast auto-starts a stopped machine, whereas
+  # plain .internal would not. websocket: true keeps SSE/streaming unbuffered.
   - name: "mcp-nwsl"
     match:
-      path_prefix: "/mcp"
+      path_prefix: "/mcp/nwsl"
     upstream:
       url: "http://jk-mcp-nwsl.flycast"
       strip_prefix: ""
