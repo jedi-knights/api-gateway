@@ -221,7 +221,7 @@ routes:
     match:
       path_prefix: "/mcp"
     upstream:
-      url: "http://jk-mcp-nwsl.flycast:8000"
+      url: "http://jk-mcp-nwsl.flycast"
       strip_prefix: ""
       timeout_secs: 300
       websocket: true
