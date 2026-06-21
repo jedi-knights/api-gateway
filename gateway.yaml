@@ -212,3 +212,16 @@ routes:
       url: "http://jk-authorization-policy-service.internal:8084"
       strip_prefix: ""
       timeout_secs: 10
+
+  # NWSL MCP server (Streamable HTTP transport, served at /mcp). Reached over
+  # flycast — a private IP through Fly's proxy — because the app is scale-to-zero
+  # (auto_stop); flycast auto-starts a stopped machine, whereas plain .internal
+  # would not. websocket: true keeps the SSE/streaming responses unbuffered.
+  - name: "mcp-nwsl"
+    match:
+      path_prefix: "/mcp"
+    upstream:
+      url: "http://jk-mcp-nwsl.flycast:8000"
+      strip_prefix: ""
+      timeout_secs: 300
+      websocket: true
