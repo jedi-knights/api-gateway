@@ -228,3 +228,12 @@ routes:
       strip_prefix: ""
       timeout_secs: 300
       websocket: true
+
+  - name: "mcp-ecnl"
+    match:
+      path_prefix: "/mcp/ecnl"
+    upstream:
+      url: "http://jk-mcp-ecnl.flycast"
+      strip_prefix: ""
+      timeout_secs: 300
+      websocket: true
