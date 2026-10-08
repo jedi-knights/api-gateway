@@ -181,6 +181,27 @@ routes:
       strip_prefix: ""
       timeout_secs: 10
 
+  # OIDC + OAuth 2.0 discovery documents and JWKS (RFC 8414, OIDC Core 1.0 §4,
+  # RFC 7517). Both /.well-known/openid-configuration and /.well-known/jwks.json
+  # live on auth-server; the single prefix route covers both.
+  - name: "auth-server-well-known"
+    match:
+      path_prefix: "/.well-known"
+    upstream:
+      url: "http://jk-auth-server.internal:8080"
+      strip_prefix: ""
+      timeout_secs: 10
+
+  # UserInfo endpoint (OIDC Core 1.0 §5.3). Bearer-token-protected on
+  # auth-server; the gateway just forwards.
+  - name: "auth-server-userinfo"
+    match:
+      path_prefix: "/userinfo"
+    upstream:
+      url: "http://jk-auth-server.internal:8080"
+      strip_prefix: ""
+      timeout_secs: 10
+
   - name: "identity-service"
     match:
       path_prefix: "/auth"
