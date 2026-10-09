@@ -6,8 +6,7 @@ import (
 	httpSwagger "github.com/swaggo/http-swagger/v2"
 
 	"github.com/jedi-knights/go-logging/pkg/logging"
-
-	"github.com/jedi-knights/go-platform/httputil"
+	"github.com/jedi-knights/go-platform/httpmw"
 
 	_ "github.com/jedi-knights/api-gateway/docs"
 	"github.com/jedi-knights/api-gateway/internal/config"
@@ -99,13 +98,13 @@ func NewRouter(
 	// Outer chain — applied to every request including system routes.
 	// Build inside-out; execution order is the reverse.
 	outer := CORSMiddleware(corsCfg)(mux)
-	outer = httputil.LoggingMiddleware(logger)(outer)
+	outer = httpmw.Logging(logger)(outer)
 	outer = RequestIDMiddleware(logger)(outer)
-	outer = httputil.TraceIDMiddleware(outer)
+	outer = httpmw.TraceID(outer)
 	if tracingMiddleware != nil {
 		outer = tracingMiddleware(outer)
 	}
-	outer = httputil.RecoveryMiddleware(logger)(outer)
+	outer = httpmw.Recovery(logger)(outer)
 	if compressionMW != nil {
 		outer = compressionMW(outer)
 	}

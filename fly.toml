@@ -37,6 +37,18 @@ kill_timeout = "30s"
     timeout      = "2s"
     grace_period = "5s"
 
+# Prometheus scrape target. The gateway already exposes /metrics on
+# the main HTTP port (internal/adapters/outbound/prometheus/metrics.go)
+# with gateway_requests_total + gateway_request_duration_ms. The
+# target port is 8080 — not the fleet-standard 9464 — because this
+# metrics route predates go-platform/httputil.StartMetricsServer. A
+# follow-up PR migrates the gateway to the shared :9464 pattern once
+# Phase A (jedi-knights/go-platform#23) lands and the gateway can
+# emit metrics via go-platform/otel.
+[metrics]
+  port = 8080
+  path = "/metrics"
+
 [[vm]]
   size   = "shared-cpu-1x"
   memory = "512mb"
